@@ -2,8 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const app = express();
-const AppError = require("./utils/customErrors");
-// const Product = require("./model/product.model");
+const userRoutes = require("./routes/user.route");
 const productRoutes = require("./routes/products.route");
 
 const port = 3000;
@@ -26,24 +25,8 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to my page!</h1>");
 });
 
-// app.get("/api/products", async (req, res) => {
-//   try {
-//     const products = await Product.find({}); //no filtering is applied.(It should return all products)
-//     res.status(200).json(products);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
+app.use("/api", userRoutes);
 app.use("/api", productRoutes);
-
-app.post("/api/products", async (req, res) => {
-  try {
-    const product = await Product.create(req.body);
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 const connectDB = async () => {
   try {

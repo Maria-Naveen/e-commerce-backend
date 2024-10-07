@@ -14,4 +14,22 @@ class NotFoundError extends AppError {
   }
 }
 
-module.exports = { AppError, NotFoundError };
+//error class for handling unauthorized entry of users
+class UnauthorizedError extends AppError {
+  constructor(message) {
+    super(message, 401);
+  }
+}
+//error class for handling already exist error
+class ValidationError extends AppError {
+  constructor(message) {
+    super(message, 400);
+  }
+}
+
+module.exports = {
+  AppError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+};
