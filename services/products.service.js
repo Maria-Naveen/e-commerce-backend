@@ -10,7 +10,7 @@ const addProduct = async (productData) => {
   }
 };
 
-const showProducts = async () => {
+const showAllProducts = async () => {
   try {
     const products = await Product.find({});
     return products;
@@ -19,4 +19,20 @@ const showProducts = async () => {
   }
 };
 
-module.exports = { addProduct, showProducts };
+const getProductById = async (productId) => {
+  try {
+    console.log(typeof productId);
+
+    const product = await Product.findOne({ id: productId });
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
+    return product;
+  } catch (error) {
+    console.error(error);
+
+    throw new AppError("Error fetching product details");
+  }
+};
+
+module.exports = { addProduct, showAllProducts, getProductById };

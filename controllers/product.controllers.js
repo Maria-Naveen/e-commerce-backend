@@ -5,9 +5,15 @@ const addProduct = async (req, res) => {
   res.status(201).json({ message: "Product added", product: product });
 };
 
-const showProducts = async (req, res) => {
-  const products = await productService.showProducts();
+const showAllProducts = async (req, res) => {
+  const products = await productService.showAllProducts();
   res.status(200).json({ products });
 };
 
-module.exports = { addProduct, showProducts };
+const showProduct = async (req, res) => {
+  const myId = req.params.id;
+  const product = await productService.getProductById(myId);
+  res.status(200).json({ product });
+};
+
+module.exports = { addProduct, showAllProducts, showProduct };
