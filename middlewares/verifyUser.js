@@ -26,7 +26,7 @@ const verifyUser = async (req, res, next) => {
       return res.status(404).json({ message: "User doesn't exist" });
     }
 
-    req.user = user; //Attaches the user object to the request object
+    req.user = { userId: user._id, isAdmin: user.isAdmin }; //Attaches the user object to the request object
     next(); //Calls the next middleware function in the stack
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });

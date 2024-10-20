@@ -8,7 +8,7 @@ const {
   NotFoundError,
 } = require("../utils/customErrors");
 
-const register = async (name, email, password, address) => {
+const register = async (name, email, password, address, isAdmin) => {
   if (!name || !email || !password || !address) {
     throw new ValidationError("All fields are required!");
   }
@@ -18,7 +18,7 @@ const register = async (name, email, password, address) => {
     throw new ValidationError("User already exists.Please login.");
   }
 
-  const newUser = new User({ name, email, password, address });
+  const newUser = new User({ name, email, password, address, isAdmin });
   await newUser.save();
 
   return { message: "User registerd successfully!" };
@@ -35,9 +35,13 @@ const login = async (email, password) => {
     throw new UnauthorizedError("Password is incorrect.");
   }
 
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SEC_KEY, {
-    expiresIn: "3h",
-  });
+  const token = jwt.sign(
+    { userId: user._id, isAdmin: user.isAdmin },
+    process.env.JWT_SEC_KEY,
+    {
+      expiresIn: "3h",
+    }
+  );
 
   return { token };
 };

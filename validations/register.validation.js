@@ -28,6 +28,7 @@ const registerValidationSchema = Joi.object({
     "any.required": "Address is required",
     "string.empty": "Address cannot be empty",
   }),
+  isAdmin: Joi.boolean(),
 });
 
 module.exports = registerValidationSchema;
