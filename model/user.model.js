@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   address: { type: String, required: true },
-  role: { type: String, default: "customer" },
+  isAdmin: { type: Boolean, default: false }, //Admin flag
 });
 
 userSchema.pre("save", async function (next) {
