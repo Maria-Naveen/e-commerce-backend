@@ -1,5 +1,6 @@
 const express = require("express");
 const verifyUser = require("../middlewares/verifyUser");
+const verifyAdmin = require("../middlewares/verifyAdmin");
 
 const {
   addProduct,
@@ -9,7 +10,7 @@ const {
 
 const router = express.Router();
 
-router.post("/products", verifyUser, addProduct);
+router.post("/products", verifyUser, verifyAdmin, addProduct);
 router.get("/products", verifyUser, showAllProducts);
 router.get("/products/:id", verifyUser, showProduct);
 
