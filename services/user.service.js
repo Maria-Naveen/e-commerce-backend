@@ -8,7 +8,14 @@ const {
   NotFoundError,
 } = require("../utils/customErrors");
 
-const register = async (name, email, password, address, isAdmin) => {
+const register = async (
+  name,
+  email,
+  password,
+  address,
+  isAdmin,
+  transporter
+) => {
   if (!name || !email || !password || !address) {
     throw new ValidationError("All fields are required!");
   }
@@ -18,10 +25,39 @@ const register = async (name, email, password, address, isAdmin) => {
     throw new ValidationError("User already exists.Please login.");
   }
 
-  const newUser = new User({ name, email, password, address, isAdmin });
-  await newUser.save();
+  const newUser = new User({
+    name,
+    email,
+    password,
+    address,
+    isAdmin,
+    verified: false,
+  });
 
-  return { message: "User registerd successfully!" };
+  const verificationToken = newUser.generateVerificationToken();
+
+  await newUser.save();
+  sendVerificationEmail(newUser, verificationToken, transporter);
+
+  return { message: "User registerd successfully! Verification email sent" };
+};
+
+const sendVerificationEmail = (user, token, transporter) => {
+  const verificationUrl = `http://localhost:3000/api/verify/${token}`;
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: user.email,
+    subject: "Verify Account",
+    html: `Click <a href='${verificationUrl}'>here</a> to confirm your email`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error sending email:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
 };
 
 const login = async (email, password) => {
@@ -46,4 +82,25 @@ const login = async (email, password) => {
   return { token };
 };
 
-module.exports = { register, login };
+const verifyEmail = async (token) => {
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.USER_VERIFICATION_TOKEN_SECRET
+    );
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return { success: false, message: "Invalid or expired token" };
+    }
+
+    user.verified = true;
+    await user.save();
+
+    return { success: true, message: "Email successfully verified!" };
+  } catch (error) {
+    return { success: false, message: "Server error" };
+  }
+};
+
+module.exports = { register, login, verifyEmail };

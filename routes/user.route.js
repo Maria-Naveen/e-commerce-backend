@@ -16,5 +16,6 @@ router.post(
   validateData(loginValidationSchema),
   userController.login
 );
+router.get("/verify/:token", userController.verifyEmail);
 
 module.exports = router;
