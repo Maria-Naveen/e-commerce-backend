@@ -8,7 +8,7 @@ const {
   addProduct,
   showAllProducts,
   showProduct,
-} = require("../controllers/product.controllers");
+} = require("../controllers/product.controller");
 
 const router = express.Router();
 

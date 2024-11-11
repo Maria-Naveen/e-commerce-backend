@@ -21,8 +21,6 @@ const showAllProducts = async () => {
 
 const getProductById = async (productId) => {
   try {
-    console.log(typeof productId);
-
     const product = await Product.findOne({ id: productId });
     if (!product) {
       throw new NotFoundError("Product not found");
