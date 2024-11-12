@@ -35,6 +35,7 @@ const addToCart = async ({ userId, productId, quantity }) => {
   cart.totalAmount += price * quantity;
 
   await cart.save();
+  console.log("Added to cart successfully!");
   return cart;
 };
 
@@ -44,6 +45,53 @@ const showCart = async (userId) => {
   ); // Populate product details
   if (!cart) throw new NotFoundError("Cart not found");
   return cart;
+};
+
+const updateCartItemQuantity = async (userId, productId, quantity) => {
+  if (quantity <= 0) {
+    throw new Error("Quantity must be greater than zero.");
+  }
+
+  // Find the cart for the user
+  let cart = await Cart.findOne({ userId });
+  if (!cart) {
+    throw new NotFoundError("Cart not found.");
+  }
+  console.log("Cart is:", cart);
+  // Find the cart item to update using customId
+  const cartItem = cart.items.find(
+    (item) => item.customId === productId // Compare as strings
+  );
+
+  console.log("Cart item:", cartItem);
+
+  if (!cartItem) {
+    throw new NotFoundError("Product not found in cart.");
+  }
+  console.log("Product No:", productId);
+  const product = await Product.findOne({ id: productId });
+  if (!product) {
+    throw new NotFoundError("Product not found.");
+  }
+
+  // Update the cart item's quantity and totalPrice
+  cartItem.quantity = quantity;
+  cartItem.totalPrice = cartItem.quantity * product.price; // Assuming price is the same
+
+  // Update the cart totals
+  cart.totalQuantity = cart.items.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+  cart.totalAmount = cart.items.reduce(
+    (total, item) => total + item.totalPrice,
+    0
+  );
+
+  // Save the cart
+  await cart.save();
+
+  return cart; // Return the updated cart
 };
 
 const removeProduct = async (userId, id) => {
@@ -82,4 +130,10 @@ const placeOrder = async (userId) => {
   return { orderTotalAmount, orderedItems };
 };
 
-module.exports = { addToCart, showCart, removeProduct, placeOrder };
+module.exports = {
+  addToCart,
+  showCart,
+  updateCartItemQuantity,
+  removeProduct,
+  placeOrder,
+};

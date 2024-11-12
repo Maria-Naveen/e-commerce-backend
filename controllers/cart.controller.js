@@ -17,6 +17,19 @@ module.exports = {
     res.status(200).json(cart);
   }),
 
+  updateCartItem: catchAsyncError(async (req, res) => {
+    // const { userId } = req.user.userId;
+    // console.log("User from controller:", userId);
+    const { productId, quantity } = req.body;
+    // console.log("User from controller:", req.user.userId);
+    const updatedCart = await cartService.updateCartItemQuantity(
+      req.user.userId,
+      productId,
+      quantity
+    );
+    res.status(200).json(updatedCart);
+  }),
+
   removeProduct: catchAsyncError(async (req, res) => {
     const { id } = req.params;
     const cart = await cartService.removeProduct(req.user.userId, id);
